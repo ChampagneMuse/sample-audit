@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Substack Brand Audit — Champagne Muse Co.</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+:root{
+  --wine:#601a24;--wine-d:#3e1018;--wine-l:#7a2230;
+  --linen:#eae5da;--linen-d:#d4cfc4;--linen-l:#f4f1ea;
+  --mist:#8b9ab1;--mist-d:#6b7a90;--mist-l:#b0bfcf;
+  --slate:#4b4f71;--slate-d:#363854;--slate-l:#656a90;
+  --black:#1a1619;--white:#fdfcfb;
+}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--linen-l);color:var(--black);overflow-x:hidden;line-height:1.65}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--linen)}::-webkit-scrollbar-thumb{background:var(--wine);border-radius:3px}
+a{text-decoration:none;color:inherit}
+.serif,h1,h2,h3{font-family:'Instrument Serif',Georgia,serif;font-weight:400}
+
+/* cursor */
+#cur{position:fixed;width:9px;height:9px;background:var(--wine);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:multiply;transition:transform .1s}
+#cur-r{position:fixed;width:34px;height:34px;border:1.5px solid var(--wine);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .16s ease;mix-blend-mode:multiply;opacity:.45}
+body:hover #cur,body:hover #cur-r{opacity:1}
+@media(hover:none){#cur,#cur-r{display:none}}
+
+/* orbs */
+.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(80px);opacity:.13;animation:floatO 16s ease-in-out infinite}
+.o1{width:360px;height:360px;background:var(--wine);top:-100px;right:-80px}
+.o2{width:260px;height:260px;background:var(--slate);bottom:15%;left:-100px;animation-delay:-6s}
+.o3{width:220px;height:220px;background:var(--mist);top:45%;right:8%;animation-delay:-10s}
+@keyframes floatO{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(24px,-36px) scale(1.06)}70%{transform:translate(-18px,22px) scale(.94)}}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:18px 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(244,241,234,.88);backdrop-filter:blur(14px);border-bottom:1px solid rgba(96,26,36,.07)}
+.nl{font-family:'Instrument Serif',Georgia,serif;font-size:19px;color:var(--wine);font-style:italic;cursor:pointer;user-select:none}
+.nc{font-size:13px;font-weight:600;color:var(--wine);border:1.5px solid var(--wine);padding:9px 22px;border-radius:100px;transition:all .2s}
+.nc:hover{background:var(--wine);color:var(--white)}
+
+.wrap{max-width:680px;margin:0 auto;padding:150px 24px 96px;position:relative;z-index:1}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--mist);margin-bottom:22px;text-align:center}
+h1{font-size:clamp(34px,6vw,52px);line-height:1.1;color:var(--wine);text-align:center;margin-bottom:18px}
+h1 em{font-style:italic;color:var(--slate)}
+.tagline{color:var(--slate-d);font-size:17px;text-align:center;max-width:52ch;margin:0 auto 48px;font-weight:300}
+
+.card{background:var(--white);border:1px solid rgba(96,26,36,.09);border-radius:18px;padding:32px;margin-bottom:22px;box-shadow:0 12px 34px rgba(96,26,36,.06)}
+label{display:block;font-size:13px;color:var(--mist-d);margin-bottom:7px;font-weight:500}
+input[type=text],input[type=email]{
+  width:100%;padding:13px 15px;border:1px solid rgba(96,26,36,.15);border-radius:10px;
+  font-family:'DM Sans',sans-serif;font-size:16px;background:var(--linen-l);color:var(--black);
+  margin-bottom:18px;transition:border-color .2s;
+}
+input:focus{outline:none;border-color:var(--wine)}
+.hint{font-size:12.5px;color:var(--mist);margin:-12px 0 18px;font-weight:300}
+button.run-btn{
+  background:var(--wine);color:var(--white);border:none;border-radius:100px;
+  padding:16px 32px;min-height:52px;font-family:'DM Sans',sans-serif;font-weight:600;
+  font-size:15px;cursor:pointer;width:100%;letter-spacing:.02em;transition:all .2s;
+}
+button.run-btn:hover{background:var(--wine-d);transform:translateY(-1px)}
+button.run-btn:disabled{opacity:.6;cursor:default}
+.error{color:#a32d2d;font-size:13.5px;margin-bottom:14px}
+
+.score-row{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid rgba(96,26,36,.08);padding:14px 0}
+.score-row:last-child{border-bottom:none}
+.score-num{font-family:'Instrument Serif',Georgia,serif;font-size:23px;color:var(--wine);flex-shrink:0;margin-left:16px}
+.fixlist{list-style:none;margin-top:10px}
+.fixlist li{margin-bottom:10px;padding-left:16px;position:relative;font-size:14px;color:var(--slate-d);font-weight:300;line-height:1.5}
+.fixlist li::before{content:'✦';color:var(--wine);font-size:8px;position:absolute;left:0;top:6px}
+
+.card h2{font-size:24px;color:var(--wine);margin-bottom:14px;font-style:italic}
+.card h3{font-size:18px;color:var(--black);margin:20px 0 6px}
+.card p{font-size:14.5px;color:var(--slate-d);font-weight:300;line-height:1.7}
+
+.pitch{background:linear-gradient(135deg,var(--wine) 0%,var(--wine-d) 100%);color:var(--white);border-radius:18px;padding:36px 32px;margin-top:28px;position:relative;overflow:hidden}
+.pitch::before{content:'';position:absolute;width:260px;height:260px;border:1px solid rgba(255,255,255,.08);border-radius:50%;top:-100px;right:-80px}
+.pitch h2{color:var(--white);position:relative}
+.pitch p{color:rgba(255,255,255,.82);position:relative;margin-bottom:20px}
+.cta-btn{display:inline-block;background:var(--white);color:var(--wine);padding:14px 30px;border-radius:100px;font-weight:600;font-size:14px;position:relative;transition:all .2s}
+.cta-btn:hover{transform:translateY(-1px)}
+
+#report{display:none}
+.loading{display:none;text-align:center;color:var(--mist-d);padding:40px 0;font-style:italic;font-family:'Instrument Serif',Georgia,serif;font-size:18px}
+
+footer{background:var(--wine-d);padding:24px;text-align:center;margin-top:40px}
+footer p{font-size:12px;color:rgba(255,255,255,.45);font-weight:300}
+.footer-egg{font-size:10.5px;color:rgba(255,255,255,.28);margin-top:8px;letter-spacing:.04em}
+
+.rv{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease}
+.rv.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-r"></div>
+<div class="orb o1"></div>
+<div class="orb o2"></div>
+<div class="orb o3"></div>
+
+<nav>
+  <span class="nl" id="logoClick">Champagne Muse Co.</span>
+  <a href="https://claude.ai/public/artifacts/0e141b94-a244-4041-a1e5-df98319b1758" target="_blank" class="nc">Explore services ✦</a>
+</nav>
+
+<div class="wrap">
+  <p class="eyebrow rv">Free · Substack Brand Audit</p>
+  <h1 class="rv">Your writing might be great. <em>Let's check if your brand agrees.</em></h1>
+  <p class="tagline rv">Drop in your Substack URL. I'll read your homepage, About page, post covers, and titles, and hand you a scored, honest breakdown — free.</p>
+
+  <div class="card rv" id="formCard">
+    <label for="url">Your Substack URL</label>
+    <input type="text" id="url" placeholder="yourname.substack.com" />
+
+    <label for="email">Your email</label>
+    <div class="hint">Your audit is delivered here, and you'll be added to the Champagne Muse Letters newsletter.</div>
+    <input type="email" id="email" placeholder="you@email.com" />
+
+    <div class="error" id="errorMsg"></div>
+    <button class="run-btn" id="generateBtn" onclick="generateAudit()">Run My Audit ✦</button>
+  </div>
+
+  <div class="loading" id="loading">Reading your Substack through the Visual Recognition Map™ lens...</div>
+
+  <div id="report"></div>
+</div>
+
+<footer>
+  <p>© 2020–2026 Champagne Muse Co. · All Rights Reserved</p>
+  <div class="footer-egg">✦ triple-click the logo above · double-click anywhere for sparkles ✦</div>
+</footer>
+
+<script>
+const VAULT_LINK = "https://claude.ai/public/artifacts/0e141b94-a244-4041-a1e5-df98319b1758";
+
+// cursor
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-r');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function ar(){rx+=(mx-rx)*.13;ry+=(my-ry)*.13;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(ar);})();
+function bindHoverCursor(){
+  document.querySelectorAll('a,button,input,.score-row').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{ring.style.transform='translate(-50%,-50%) scale(1.7)';ring.style.opacity='.7';cur.style.transform='translate(-50%,-50%) scale(.35)';});
+    el.addEventListener('mouseleave',()=>{ring.style.transform='translate(-50%,-50%) scale(1)';ring.style.opacity='.45';cur.style.transform='translate(-50%,-50%) scale(1)';});
+  });
+}
+bindHoverCursor();
+
+// reveal
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.1});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+// double-click sparkles
+const sparkColors=['#601a24','#4b4f71','#8b9ab1','#eae5da'];
+document.addEventListener('dblclick',e=>{
+  for(let i=0;i<14;i++){
+    const sp=document.createElement('div');
+    const angle=Math.random()*Math.PI*2,dist=40+Math.random()*90;
+    const color=sparkColors[Math.floor(Math.random()*sparkColors.length)];
+    const size=14+Math.random()*16;
+    const id='sp'+Math.random().toString(36).slice(2,9);
+    sp.style.cssText=`position:fixed;pointer-events:none;z-index:9999;font-family:'Instrument Serif',serif;font-size:${size}px;color:${color};opacity:0;left:${e.clientX}px;top:${e.clientY}px;transform:translate(-50%,-50%);animation:${id} .9s ease forwards`;
+    sp.textContent=['✦','·','◦','✧'][Math.floor(Math.random()*4)];
+    const style=document.createElement('style');
+    style.textContent=`@keyframes ${id}{0%{opacity:0;transform:translate(-50%,-50%) scale(0)}30%{opacity:.85}100%{opacity:0;transform:translate(calc(-50% + ${Math.cos(angle)*dist}px),calc(-50% + ${Math.sin(angle)*dist}px)) scale(1.3)}}`;
+    document.head.appendChild(style);
+    document.body.appendChild(sp);
+    setTimeout(()=>{sp.remove();style.remove();},950);
+  }
+});
+
+// triple-click logo -> discount popup for services
+let logoClicks=0,logoTimer;
+document.getElementById('logoClick').addEventListener('click',()=>{
+  logoClicks++;
+  clearTimeout(logoTimer);
+  if(logoClicks>=3){logoClicks=0;openDiscountPopup();}
+  logoTimer=setTimeout(()=>{logoClicks=0;},1600);
+});
+function openDiscountPopup(){
+  if(document.getElementById('discountOverlay'))return;
+  const overlay=document.createElement('div');
+  overlay.id='discountOverlay';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(26,22,25,.55);backdrop-filter:blur(4px);z-index:10000;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;transition:opacity .35s ease';
+  overlay.innerHTML=`
+    <div style="max-width:380px;width:100%;animation:discPopIn .55s cubic-bezier(.34,1.56,.64,1) both">
+      <div style="background:linear-gradient(135deg,var(--wine) 0%,var(--wine-d) 55%,var(--slate-d) 100%);border-radius:22px;padding:34px;box-shadow:0 30px 70px rgba(96,26,36,.4)">
+        <div style="font-family:'Instrument Serif',Georgia,serif;font-size:17px;color:rgba(255,255,255,.55);font-style:italic;margin-bottom:18px">Champagne Muse Co.</div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:10px">You found it ✦ 20% off services</div>
+        <div style="background:rgba(255,255,255,.12);border:1.5px dashed rgba(255,255,255,.4);border-radius:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <span style="font-family:'Instrument Serif',Georgia,serif;font-size:26px;color:var(--white);letter-spacing:.06em">CMUSE20</span>
+          <button onclick="copyDiscountCode(event)" style="background:rgba(255,255,255,.2);border:none;color:var(--white);font-size:11px;font-weight:600;padding:7px 14px;border-radius:100px;cursor:pointer">Copy</button>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:22px">
+        <a href="${VAULT_LINK}" target="_blank" style="display:inline-block;background:var(--white);color:var(--wine);font-size:13px;font-weight:600;padding:12px 28px;border-radius:100px;margin-right:10px">Use this code →</a>
+        <button onclick="closeDiscountPopup()" style="background:transparent;border:1.5px solid rgba(255,255,255,.4);color:var(--white);font-size:13px;padding:12px 22px;border-radius:100px;cursor:pointer">Close</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  requestAnimationFrame(()=>{overlay.style.opacity='1';});
+  overlay.addEventListener('click',e=>{if(e.target===overlay)closeDiscountPopup();});
+}
+function closeDiscountPopup(){
+  const overlay=document.getElementById('discountOverlay');
+  if(!overlay)return;
+  overlay.style.opacity='0';
+  setTimeout(()=>overlay.remove(),300);
+}
+function copyDiscountCode(e){
+  e.stopPropagation();
+  navigator.clipboard.writeText('CMUSE20').catch(()=>{});
+  const btn=e.target,orig=btn.textContent;
+  btn.textContent='Copied ✦';
+  setTimeout(()=>{btn.textContent=orig;},1500);
+}
+const discStyle=document.createElement('style');
+discStyle.textContent='@keyframes discPopIn{from{opacity:0;transform:scale(.85) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}';
+document.head.appendChild(discStyle);
+
+// magnetic buttons
+document.querySelectorAll('.run-btn,.nc,.cta-btn').forEach(btn=>{
+  btn.addEventListener('mousemove',e=>{
+    const r=btn.getBoundingClientRect(),x=(e.clientX-r.left-r.width/2)*.18,y=(e.clientY-r.top-r.height/2)*.18;
+    btn.style.transform=`translate(${x}px,${y}px)`;
+  });
+  btn.addEventListener('mouseleave',()=>{btn.style.transform='';});
+});
+
+// ── AUDIT LOGIC ──
+function esc(s){const d=document.createElement('div');d.innerText=s;return d.innerHTML;}
+
+async function generateAudit(){
+  const url=document.getElementById('url').value.trim();
+  const email=document.getElementById('email').value.trim();
+  const errorEl=document.getElementById('errorMsg');
+  errorEl.textContent='';
+
+  if(!url){errorEl.textContent='Enter your Substack URL.';return;}
+  if(!email||!email.includes('@')){errorEl.textContent='Enter a valid email.';return;}
+
+  document.getElementById('formCard').style.display='none';
+  document.getElementById('loading').style.display='block';
+
+  try{
+    const res=await fetch('/api/audit',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({url,email})
+    });
+    const report=await res.json();
+    if(!res.ok){throw new Error(report.error||'Something went wrong.');}
+    renderReport(report);
+  }catch(err){
+    document.getElementById('loading').style.display='none';
+    document.getElementById('formCard').style.display='block';
+    errorEl.textContent=err.message;
+  }
+}
+
+function renderReport(r){
+  document.getElementById('loading').style.display='none';
+  const el=document.getElementById('report');
+
+  let scoresHtml=r.scores.map(s=>`
+    <div class="score-row">
+      <div style="max-width:75%">
+        <strong style="color:var(--black)">${esc(s.category)}</strong>
+        <div class="hint" style="margin:6px 0 0">${esc(s.working)}</div>
+        <div class="hint" style="margin:2px 0 0">${esc(s.weakening)}</div>
+        <div style="font-size:13.5px;margin-top:8px;color:var(--slate-d)"><em>Priority fix:</em> ${esc(s.fix)}</div>
+      </div>
+      <div class="score-num">${esc(String(s.score))}/10</div>
+    </div>`).join('');
+
+  function fixList(title,items){
+    if(!items||!items.length)return'';
+    return `<h3>${title}</h3><ul class="fixlist">${items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`;
+  }
+
+  el.innerHTML=`
+    <div class="card rv in">
+      <h2>Brand snapshot</h2>
+      <p>${esc(r.brand_snapshot)}</p>
+      <p style="margin-top:14px"><strong>Overall score:</strong> <span class="score-num" style="margin-left:8px">${esc(String(r.overall_score))}/10</span></p>
+    </div>
+    <div class="card rv in">
+      <h2>Scored breakdown</h2>
+      ${scoresHtml}
+    </div>
+    <div class="card rv in">
+      <h3 style="margin-top:0">Visual cohesion check</h3>
+      <p>${esc(r.visual_check)}</p>
+      <h3>Title check</h3>
+      <p>${esc(r.title_check)}</p>
+    </div>
+    <div class="card rv in">
+      <h2>Priority fixes</h2>
+      ${fixList('Urgent',r.priority_fixes.urgent)}
+      ${fixList('Important',r.priority_fixes.important)}
+      ${fixList('Optional',r.priority_fixes.optional)}
+    </div>
+    <div class="pitch rv in">
+      <h2>Want the deeper version?</h2>
+      <p>This is the free read. A full Substack brand audit with tailored, line-by-line recommendations lives inside The Brand Intensive and the rest of Champagne Muse Co.'s branding services.</p>
+      <a class="cta-btn" href="${VAULT_LINK}" target="_blank">Book a consultation or explore services</a>
+    </div>`;
+  el.style.display='block';
+  bindHoverCursor();
+  el.querySelectorAll('.rv').forEach(x=>io.observe(x));
+}
+</script>
+</body>
+</html>
