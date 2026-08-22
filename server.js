@@ -11,7 +11,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = 'gemini-flash-latest'; // auto-points to Google's current recommended Flash model
-const GEMINI_FALLBACK_MODEL = 'gemini-2.0-flash'; // stable, less likely to be overloaded than the latest/preview alias
+const GEMINI_FALLBACK_MODEL = 'gemini-3.6-flash'; // stable, less likely to be overloaded than the latest/preview alias
 const ZAPIER_WEBHOOK_URL = process.env.ZAPIER_WEBHOOK_URL || null;
 const LEADS_FILE = path.join(__dirname, 'leads.json');
 
