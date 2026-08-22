@@ -11,6 +11,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = 'gemini-flash-latest'; // auto-points to Google's current recommended Flash model
+const GEMINI_FALLBACK_MODEL = 'gemini-2.0-flash'; // stable, less likely to be overloaded than the latest/preview alias
 const ZAPIER_WEBHOOK_URL = process.env.ZAPIER_WEBHOOK_URL || null;
 const LEADS_FILE = path.join(__dirname, 'leads.json');
 
@@ -147,12 +148,20 @@ async function processQueue() {
   processing = false;
 }
 
+const RETRYABLE_STATUSES = new Set([429, 500, 503]);
+const MAX_RETRY_ATTEMPTS = 5;
+
 async function runWithRetry(task, attempt = 1) {
   try {
     return await task();
   } catch (err) {
-    if (err.status === 429 && attempt <= 3) {
-      const backoff = 2000 * attempt;
+    const retryable = RETRYABLE_STATUSES.has(err.status);
+    if (retryable && attempt <= MAX_RETRY_ATTEMPTS) {
+      // Exponential backoff with jitter: 1.5s, 3s, 6s, 12s, 24s (+/- randomness)
+      const base = 1500 * Math.pow(2, attempt - 1);
+      const jitter = Math.random() * 500;
+      const backoff = base + jitter;
+      console.log(`Gemini ${err.status} on attempt ${attempt}, retrying in ${Math.round(backoff)}ms...`);
       await new Promise(r => setTimeout(r, backoff));
       return runWithRetry(task, attempt + 1);
     }
@@ -174,9 +183,9 @@ async function callGemini(scraped, url) {
     }
   }
 
-  const task = async () => {
+  const callModel = async (model) => {
     const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -187,9 +196,9 @@ async function callGemini(scraped, url) {
         })
       }
     );
-    if (res.status === 429) {
-      const err = new Error('Rate limited by Gemini');
-      err.status = 429;
+    if (RETRYABLE_STATUSES.has(res.status)) {
+      const err = new Error(`Gemini returned ${res.status} for model ${model}`);
+      err.status = res.status;
       throw err;
     }
     const data = await res.json();
@@ -198,6 +207,20 @@ async function callGemini(scraped, url) {
     if (!text) throw new Error('No content returned from Gemini');
     const clean = text.replace(/```json|```/g, '').trim();
     return JSON.parse(clean);
+  };
+
+  const task = async () => {
+    try {
+      return await callModel(GEMINI_MODEL);
+    } catch (err) {
+      // Primary model exhausted its retries (runWithRetry already retried this
+      // task 5x before giving up) — try once on the fallback model before failing.
+      if (RETRYABLE_STATUSES.has(err.status) && GEMINI_FALLBACK_MODEL) {
+        console.log(`Primary model failed after retries (${err.status}), trying fallback model ${GEMINI_FALLBACK_MODEL}...`);
+        return await callModel(GEMINI_FALLBACK_MODEL);
+      }
+      throw err;
+    }
   };
 
   return enqueue(task);
@@ -240,8 +263,11 @@ app.post('/api/audit', async (req, res) => {
     res.json(report);
   } catch (err) {
     console.error(err);
-    if (err.status === 429 || /rate limit/i.test(err.message || '')) {
+    if (err.status === 429) {
       return res.status(429).json({ error: "We're getting a lot of audits right now — try again in a minute." });
+    }
+    if (err.status === 503 || err.status === 500) {
+      return res.status(503).json({ error: "Gemini is overloaded on their end right now, even after retrying twice on two models. Give it a few minutes and try again." });
     }
     res.status(500).json({ error: 'Something went wrong generating the audit. Try again shortly.' });
   }
