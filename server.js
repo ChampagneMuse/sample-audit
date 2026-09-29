@@ -13,7 +13,7 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = 'gemini-flash-latest'; // auto-points to Google's current recommended Flash model
 const GEMINI_FALLBACK_MODEL = 'gemini-3.6-flash'; // stable, less likely to be overloaded than the latest/preview alias
 const GROQ_API_KEY = process.env.GROQ_API_KEY || null;
-const GROQ_MODEL = 'llama-3.3-70b-versatile'; // free tier, different infra than Gemini so a Gemini outage can't take this down too
+const GROQ_MODEL = 'openai/gpt-oss-120b'; // free tier, different infra than Gemini so a Gemini outage can't take this down too
 const ZAPIER_WEBHOOK_URL = process.env.ZAPIER_WEBHOOK_URL || null;
 const LEADS_FILE = path.join(__dirname, 'leads.json');
 
