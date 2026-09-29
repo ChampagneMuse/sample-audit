@@ -12,6 +12,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = 'gemini-flash-latest'; // auto-points to Google's current recommended Flash model
 const GEMINI_FALLBACK_MODEL = 'gemini-3.6-flash'; // stable, less likely to be overloaded than the latest/preview alias
+const GROQ_API_KEY = process.env.GROQ_API_KEY || null;
+const GROQ_MODEL = 'llama-3.3-70b-versatile'; // free tier, different infra than Gemini so a Gemini outage can't take this down too
 const ZAPIER_WEBHOOK_URL = process.env.ZAPIER_WEBHOOK_URL || null;
 const LEADS_FILE = path.join(__dirname, 'leads.json');
 
@@ -169,6 +171,36 @@ async function runWithRetry(task, attempt = 1) {
   }
 }
 
+async function callGroq(scraped, url) {
+  if (!GROQ_API_KEY) {
+    const err = new Error('No GROQ_API_KEY configured, skipping Groq fallback');
+    throw err;
+  }
+  const userText = `Substack URL: ${url}\nPublication title: ${scraped.pubName || '(unknown)'}\nHomepage meta description: ${scraped.metaDescription || '(none)'}\n\nAbout page text:\n${scraped.aboutText || '(not found)'}\n\nRecent post titles:\n${scraped.titles.join('\n') || '(none found)'}\n\nNote: post cover images could not be analyzed for this run (fallback provider is text-only) — base the audit on the text above.`;
+
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${GROQ_API_KEY}`
+    },
+    body: JSON.stringify({
+      model: GROQ_MODEL,
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user', content: userText }
+      ]
+    })
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error('Groq API error: ' + JSON.stringify(data));
+  const text = data.choices?.[0]?.message?.content;
+  if (!text) throw new Error('No content returned from Groq');
+  const clean = text.replace(/```json|```/g, '').trim();
+  return JSON.parse(clean);
+}
+
 async function callGemini(scraped, url) {
   const parts = [
     {
@@ -217,7 +249,17 @@ async function callGemini(scraped, url) {
       // task 5x before giving up) — try once on the fallback model before failing.
       if (RETRYABLE_STATUSES.has(err.status) && GEMINI_FALLBACK_MODEL) {
         console.log(`Primary model failed after retries (${err.status}), trying fallback model ${GEMINI_FALLBACK_MODEL}...`);
-        return await callModel(GEMINI_FALLBACK_MODEL);
+        try {
+          return await callModel(GEMINI_FALLBACK_MODEL);
+        } catch (err2) {
+          // Both Gemini models are down (a Gemini-wide outage, not just one model) —
+          // fall through to Groq, a completely different provider/infra, as a last resort.
+          if (RETRYABLE_STATUSES.has(err2.status) && GROQ_API_KEY) {
+            console.log('Both Gemini models exhausted, trying Groq fallback (text-only, no image analysis this run)...');
+            return await callGroq(scraped, url);
+          }
+          throw err2;
+        }
       }
       throw err;
     }
@@ -267,7 +309,7 @@ app.post('/api/audit', async (req, res) => {
       return res.status(429).json({ error: "We're getting a lot of audits right now — try again in a minute." });
     }
     if (err.status === 503 || err.status === 500) {
-      return res.status(503).json({ error: "Gemini is overloaded on their end right now, even after retrying twice on two models. Give it a few minutes and try again." });
+      return res.status(503).json({ error: "The audit engines are all overloaded right now (we tried two Gemini models and a backup provider). Give it a few minutes and try again." });
     }
     res.status(500).json({ error: 'Something went wrong generating the audit. Try again shortly.' });
   }
